@@ -1,0 +1,1517 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:simpleType name="conditionSimpleType">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+    <xs:simpleType name="binaryOperation">
+        <xs:annotation>
+            <xs:documentation>defines a binary
+                operation
+            </xs:documentation>
+            <xs:documentation>lt = less</xs:documentation>
+            <xs:documentation>le = less or equal</xs:documentation>
+            <xs:documentation>gt = greater</xs:documentation>
+            <xs:documentation>ge = greater or equal</xs:documentation>
+            <xs:documentation>eq = equal</xs:documentation>
+            <xs:documentation>neq = not equal</xs:documentation>
+            <xs:documentation>like = oracle like condition</xs:documentation>
+        </xs:annotation>
+        <xs:restriction
+                base="xs:string">
+            <xs:enumeration value="lt"/>
+            <xs:enumeration value="le"/>
+            <xs:enumeration value="gt"/>
+            <xs:enumeration value="ge"/>
+            <xs:enumeration value="eq"/>
+            <xs:enumeration value="neq"/>
+            <xs:enumeration value="in">
+                <xs:annotation>
+                    <xs:documentation>Not supported yet</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="like"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="fidelio">
+        <xs:annotation>
+            <xs:documentation>The root element of any XML accepted by V8 XML Interface</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="request">
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="requestType">
+                                <xs:attribute name="ID" type="xs:string" use="required"/>
+                                <xs:attribute name="UserName" type="xs:string" use="required"/>
+                                <xs:attribute name="Password" type="xs:string" use="required"/>
+                                <xs:attribute name="Vendor" type="xs:string">
+                                    <xs:annotation>
+                                        <xs:documentation>Required when one of the licenses
+                                            CRSXMLONEWAY_NCM, CRSXMLTWOWAY_NCM, CRSXMLONEWAY_FIDELIO8 or
+                                            ftCRSXMLTWOWAY_FIDELIO8 is used
+                                        </xs:documentation>
+                                    </xs:annotation>
+                                </xs:attribute>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="response">
+                    <xs:annotation>
+                        <xs:documentation>Status codes are:
+                            OK Command or request successful
+                            CO Posting denied because overwrite CreditLimit is not allowed
+                            IA Guest related requests Invalid account
+                            NG Guest not found
+                            NP Posting denied because NoPost is set
+                            UR Unprocessable request, this request cannot be carried out, no retry
+                            IR Invalid request or unsupported request type
+                            IC Invalid credentials. Wrong username or password
+                            AD Access denied. Not enough user rights or trying to make batch update when it is not allowed be configuration
+                            Message is optional attribute used when Status is not OK
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="postResponseType">
+                                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                                    <xs:element name="queryResponse" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:annotation>
+                                            <xs:documentation>Provided only when request contains the "query" section
+                                                Attribute name exists only when was passed in the request
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                        <xs:complexType>
+                                            <xs:all>
+                                                <xs:element name="rows" type="rowsType"/>
+                                            </xs:all>
+                                            <xs:attribute name="Name" type="xs:string"/>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="insertResponse" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:annotation>
+                                            <xs:documentation>Provided when request contains the "insert" section and
+                                                contains the IDs
+                                                of the created objects
+                                                Attribute name exists only when was passed in the request
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                        <xs:complexType>
+                                            <xs:all>
+                                                <xs:element name="rows">
+                                                    <xs:complexType>
+                                                        <xs:sequence>
+                                                            <xs:element name="ProfileID" type="xs:integer"
+                                                                        minOccurs="0"/>
+                                                            <xs:element name="FANumber" minOccurs="0"/>
+                                                            <xs:element name="GuestNum" type="xs:integer"
+                                                                        minOccurs="0"/>
+                                                            <xs:element name="ProfileGlobalID" type="xs:integer"
+                                                                        minOccurs="0"/>
+                                                            <xs:element name="LastUpdateTime" type="xs:string"
+                                                                        minOccurs="0"/>
+                                                            <xs:choice minOccurs="0">
+                                                                <xs:element name="Addresses">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name="Address"
+                                                                                        maxOccurs="unbounded">
+                                                                                <xs:complexType>
+                                                                                    <xs:attribute name="initID"
+                                                                                                  type="xs:integer"
+                                                                                                  use="required"/>
+                                                                                    <xs:attribute name="newID"
+                                                                                                  type="xs:integer"
+                                                                                                  use="required"/>
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:choice>
+                                                            <xs:choice minOccurs="0">
+                                                                <xs:element name="Communications">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name="Communication"
+                                                                                        maxOccurs="unbounded">
+                                                                                <xs:complexType>
+                                                                                    <xs:attribute name="newID"
+                                                                                                  type="xs:integer"
+                                                                                                  use="required"/>
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:choice>
+                                                            <xs:choice minOccurs="0">
+                                                                <xs:element name="Notes">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name="Note"
+                                                                                        maxOccurs="unbounded">
+                                                                                <xs:complexType>
+                                                                                    <xs:attribute name="newID"
+                                                                                                  type="xs:integer"
+                                                                                                  use="required"/>
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:choice>
+                                                            <xs:choice minOccurs="0">
+                                                                <xs:element name="GuestComments">
+                                                                    <xs:complexType>
+                                                                        <xs:sequence>
+                                                                            <xs:element name="GuestComment"
+                                                                                        maxOccurs="unbounded">
+                                                                                <xs:complexType>
+                                                                                    <xs:attribute name="newID"
+                                                                                                  type="xs:integer"
+                                                                                                  use="required"/>
+                                                                                </xs:complexType>
+                                                                            </xs:element>
+                                                                        </xs:sequence>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:choice>
+                                                            <xs:element name="TaskID" type="xs:integer" minOccurs="0"/>
+                                                            <xs:element name="ActivityID" type="xs:integer"
+                                                                        minOccurs="0"/>
+                                                            <xs:element name="GroupID" type="xs:integer" minOccurs="0"/>
+                                                            <xs:element name="GroupTemplateID" type="xs:integer"
+                                                                        minOccurs="0"/>
+                                                        </xs:sequence>
+                                                    </xs:complexType>
+                                                </xs:element>
+                                            </xs:all>
+                                            <xs:attribute name="Name" type="xs:string"/>
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="updateResponse" minOccurs="0" maxOccurs="unbounded">
+                                        <xs:annotation>
+                                            <xs:documentation>Provided when request contains the "update" section and
+                                                contains
+                                                requested data of the updated objects created objects
+                                                Attribute name exists only when was passed in the request
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                        <xs:complexType>
+                                            <xs:all>
+                                                <xs:element name="rows" type="rowsType"/>
+                                            </xs:all>
+                                            <xs:attribute name="Name" type="xs:string"/>
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:choice>
+                                <xs:attribute name="ID" type="xs:string" use="required"/>
+                                <xs:attribute name="Status" use="required">
+                                    <xs:simpleType>
+                                        <xs:restriction base="xs:NMTOKENS">
+                                            <xs:enumeration value="OK">
+                                                <xs:annotation>
+                                                    <xs:documentation>Command or request successful</xs:documentation>
+                                                </xs:annotation>
+                                            </xs:enumeration>
+                                            <xs:enumeration value="CO"/>
+                                            <xs:enumeration value="IA"/>
+                                            <xs:enumeration value="NG"/>
+                                            <xs:enumeration value="NP"/>
+                                            <xs:enumeration value="UR"/>
+                                        </xs:restriction>
+                                    </xs:simpleType>
+                                </xs:attribute>
+                                <xs:attribute name="Message" type="xs:string"/>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+            <xs:attribute name="Version" use="required">
+                <xs:annotation>
+                    <xs:documentation>Specifies the version of the interface. Could be changed and in the future accept
+                        more values
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:NMTOKEN">
+                        <xs:enumeration value="1.0.0"/>
+                        <xs:enumeration value="1.0.1"/>
+                        <xs:enumeration value="1.0.2"/>
+                        <xs:enumeration value="1.0.3"/>
+                        <xs:enumeration value="1.0.4"/>
+                        <xs:enumeration value="1.0.5"/>
+                        <xs:enumeration value="1.0.6"/>
+                        <xs:enumeration value="1.0.7"/>
+                        <xs:enumeration value="1.1.0"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="rowsType">
+        <xs:annotation>
+            <xs:documentation>contains a set of rows
+                returned by a query operations
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="row" type="rowType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="fieldType">
+        <xs:annotation>
+            <xs:documentation>Fields which can be
+                requested
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" use="required">
+                    <xs:simpleType>
+                        <xs:restriction
+                                base="xs:NMTOKEN">
+                            <xs:enumeration value="GuestArrival">
+                                <xs:annotation>
+                                    <xs:documentation>Arrival date</xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="ReservationComment1"/>
+                            <xs:enumeration
+                                    value="ReservationComment2"/>
+                            <xs:enumeration value="CheckinDateTime"/>
+                            <xs:enumeration value="NoAvailReason">
+                                <xs:annotation>
+                                    <xs:documentation>1 =
+                                        Waitlist 2 = Offer 3 = Canceled 4 = No Show
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="ProfileID"/>
+                            <xs:enumeration
+                                    value="PaymentMethod">
+                                <xs:annotation>
+                                    <xs:documentation>The department code
+                                        which is associated with the payment
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="GuestDeparture">
+                                <xs:annotation>
+                                    <xs:documentation>Departure date</xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="GuestFirstname"/>
+                            <xs:enumeration
+                                    value="GuestName"/>
+                            <xs:enumeration value="Name2"/>
+                            <xs:enumeration
+                                    value="GuestNum">
+                                <xs:annotation>
+                                    <xs:documentation>Reservation
+                                        Number
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration
+                                    value="ReservationStatus">
+                                <xs:annotation>
+                                    <xs:documentation>0=tentative 1=definitive
+                                        3=not affecting availability
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="RoomNum"/>
+                            <xs:enumeration value="RoomType"/>
+                            <xs:enumeration value="ProfileType">
+                                <xs:annotation>
+                                    <xs:documentation>1 - Company
+                                        2 - Individual 3 – Employee
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="ProfileCategory">
+                                <xs:annotation>
+                                    <xs:documentation>1=Company 2=Travel Agent 3=Source
+                                        4=Individual 5=Vendors 6=Meeting
+                                        Planner
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration
+                                    value="DepartmentCode"/>
+                            <xs:enumeration value="DepartmentName"/>
+                            <xs:enumeration
+                                    value="DepartmentShortDesc"/>
+                            <xs:enumeration value="DepartmentType">
+                                <xs:annotation>
+                                    <xs:documentation>1 = debit
+                                        2 = tax 3 = credit
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="DepartmentArrangement"/>
+                            <xs:enumeration value="AddressGreeting"/>
+                            <xs:enumeration value="Birthday"/>
+                            <xs:enumeration value="City"/>
+                            <xs:enumeration value="CountryISO2"/>
+                            <xs:enumeration
+                                    value="CountryISO3"/>
+                            <xs:enumeration value="Email"/>
+                            <xs:enumeration value="Fax"/>
+                            <xs:enumeration value="Gender">
+                                <xs:annotation>
+                                    <xs:documentation>M – male, F –
+                                        Female
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration
+                                    value="DeleteCode">
+                                <xs:annotation>
+                                    <xs:documentation>Prfile delete code. 0 –profile
+                                        is active 1 – profile is not active
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="GuestType"/>
+                            <xs:enumeration value="LangISO2"/>
+                            <xs:enumeration value="LangISO3"/>
+                            <xs:enumeration value="LetterGreeting"/>
+                            <xs:enumeration value="NationalityISO2"/>
+                            <xs:enumeration value="NationalityISO3"/>
+                            <xs:enumeration value="VipCode"/>
+                            <xs:enumeration value="ProfileID"/>
+                            <xs:enumeration
+                                    value="Street1"/>
+                            <xs:enumeration value="Street2"/>
+                            <xs:enumeration value="Street3"/>
+                            <xs:enumeration value="State"/>
+                            <xs:enumeration value="Telephone"/>
+                            <xs:enumeration
+                                    value="Title"/>
+                            <xs:enumeration value="ZIP"/>
+                            <xs:enumeration value="SystemDate"/>
+                            <xs:enumeration value="LicenseName"/>
+                            <xs:enumeration value="LicenseNoOfRooms"/>
+                            <xs:enumeration value="CrsSystem">
+                                <xs:annotation>
+                                    <xs:documentation>ID of the
+                                        CRS system the reservation originates from
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="CrsResNumber">
+                                <xs:annotation>
+                                    <xs:documentation>Unique ID coming from CRS System, linked to CrsSystem in order to
+                                        support multiple
+                                        CRS systems.
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="Notes"/>
+                            <xs:enumeration value="NoOfRooms"/>
+                            <xs:enumeration
+                                    value="NoOfAdults"/>
+                            <xs:enumeration value="RateCode"/>
+                            <xs:enumeration
+                                    value="RateValue"/>
+                            <xs:enumeration value="ForeignRateValue">
+                                <xs:annotation>
+                                    <xs:documentation>Rate in foreign currency</xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="CurrencyCode"/>
+                            <xs:enumeration
+                                    value="MarketCode"/>
+                            <xs:enumeration value="CompanyID"/>
+                            <xs:enumeration
+                                    value="TravelAgentID"/>
+                            <xs:enumeration value="SourceID"/>
+                            <xs:enumeration
+                                    value="CompanyName"/>
+                            <xs:enumeration value="TravelAgentName"/>
+                            <xs:enumeration
+                                    value="SourceName"/>
+                            <xs:enumeration value="ReservationAttribute">
+                                <xs:annotation>
+                                    <xs:documentation>Could be use with conjunction with optional attribute "attr" which
+                                        contains the required
+                                        attribute type.For Example
+                                        <field name="ReservationAttribute" attr="ABC"/>
+                                        If the attribute is not specified
+                                        than all available attributes will be included in the responseIf this element
+                                        used in the update or insert than
+                                        user must specify attribute attr
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="Child">
+                                <xs:annotation>
+                                    <xs:documentation>Could be used with
+                                        conjunction with optional attribute "attr" which contains the required child
+                                        type.For Example
+                                        <field
+                                                name="Child" attr="JUN"/>
+                                        for juniorIf the attribute is not specified than all available attributes will
+                                        be
+                                        included in the responseThe attr mandatory for update / insert statements
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="SourceCode"/>
+                            <xs:enumeration value="ChannelCode"/>
+                            <xs:enumeration value="PostingPrice"/>
+                            <xs:enumeration value="PostingID"/>
+                            <xs:enumeration value="PostingQuantity"/>
+                            <xs:enumeration value="PostingForeignPrice"/>
+                            <xs:enumeration value="PostingGuestNumOrig"/>
+                            <xs:enumeration value="PostingGuestNumOrig"/>
+                            <xs:enumeration value="PostingProfileOrigID"/>
+                            <xs:enumeration value="PostingComment"/>
+                            <xs:enumeration value="PostingCheckNr"/>
+                            <xs:enumeration value="PostingDescription"/>
+                            <xs:enumeration value="PostingDate"/>
+                            <xs:enumeration value="LoginName"/>
+                            <xs:enumeration value="LoginPassword"/>
+                            <xs:enumeration value="ChildrenCategoriesCode"/>
+                            <xs:enumeration
+                                    value="ChildrenCategoriesName"/>
+                            <xs:enumeration value="ChildrenCategoriesFromAge"/>
+                            <xs:enumeration value="ChildrenCategoriesToAge"/>
+                            <xs:enumeration value="CreditCardCode"/>
+                            <xs:enumeration value="CreditCardName"/>
+                            <xs:enumeration value="FANumber"/>
+                            <xs:enumeration value="FADescription"/>
+                            <xs:enumeration value="ExpArrival"/>
+                            <xs:enumeration value="ExpDeparture"/>
+                            <xs:enumeration value="ActArrival"/>
+                            <xs:enumeration value="ActDeparture"/>
+                            <xs:enumeration value="CreditLimitType"/>
+                            <xs:enumeration value="CreditLimitAmount"/>
+                            <xs:enumeration value="CreditCardNo"/>
+                            <xs:enumeration value="ExpiryMonth"/>
+                            <xs:enumeration value="ExpiryYear"/>
+                            <xs:enumeration value="CardholderName"/>
+                            <xs:enumeration value="CreditCardCode"/>
+                            <xs:enumeration value="FAGroup"/>
+                            <xs:enumeration value="TryToMerge">
+                                <xs:annotation>
+                                    <xs:documentation>Can be used with Profile -> Insert command only.Values 1 -
+                                        true, 0 - falseIf Value is 1 XML interface will try to find existing profiles
+                                        which has similar data (according to
+                                        profile merge setup)
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="HtmlId"/>
+                            <xs:enumeration value="HtmlName"/>
+                            <xs:enumeration
+                                    value="HtmlContent"/>
+                            <xs:enumeration value="ProfileGlobalID"/>
+                            <xs:enumeration
+                                    value="CentralSyncTime"/>
+                            <xs:enumeration value="SeatingID"/>
+                            <xs:enumeration
+                                    value="SeatingShortDesc"/>
+                            <xs:enumeration value="SeatingLongDesc"/>
+                            <xs:enumeration
+                                    value="SeatingDisplayOrder"/>
+                            <xs:enumeration value="StatusID"/>
+                            <xs:enumeration
+                                    value="StatusShortDesc"/>
+                            <xs:enumeration value="StatusLongDesc"/>
+                            <xs:enumeration
+                                    value="StatusDisplayOrder"/>
+                            <xs:enumeration value="StatusWebName"/>
+                            <xs:enumeration
+                                    value="StatusInactiveID"/>
+                            <xs:enumeration value="Booking_CompanyID"/>
+                            <xs:enumeration value="Booking_ContactID"/>
+                            <xs:enumeration value="Booking_ArrivalDate"/>
+                            <xs:enumeration value="Booking_DepartureDate"/>
+                            <xs:enumeration value="Booking_Name"/>
+                            <xs:enumeration value="Booking_ConferenceStatus"/>
+                            <xs:enumeration
+                                    value="Booking_RoomStatus"/>
+                            <xs:enumeration value="Booking_ConferenceOnly"/>
+                            <xs:enumeration value="Booking_RoomsOnly"/>
+                            <xs:enumeration
+                                    value="Booking_ConferenceAndRooms"/>
+                            <xs:enumeration value="Booking_Notes"/>
+                            <xs:enumeration value="Booking_NoOfAttendes"/>
+                            <xs:enumeration
+                                    value="Booking_MarketCode"/>
+                            <xs:enumeration value="Booking_SourceCode"/>
+                            <xs:enumeration value="Booking_NoteCategory"/>
+                            <xs:enumeration
+                                    value="ConferencePackageID"/>
+                            <xs:enumeration value="ConferencePackageName"/>
+                            <xs:enumeration value="ConferencePackageValidFrom"/>
+                            <xs:enumeration
+                                    value="ConferencePackageValidTo"/>
+                            <xs:enumeration value="Eventid"/>
+                            <xs:enumeration
+                                    value="EventName"/>
+                            <xs:enumeration value="EventStartDate"/>
+                            <xs:enumeration
+                                    value="EventStartTime"/>
+                            <xs:enumeration value="EventEndDate"/>
+                            <xs:enumeration
+                                    value="EventEndTime"/>
+                            <xs:enumeration value="EventInfoBoard"/>
+                            <xs:enumeration
+                                    value="EventProfileName"/>
+                            <xs:enumeration value="EventPax"/>
+                            <xs:enumeration
+                                    value="EventRoomName"/>
+                            <xs:enumeration value="TimeStamp"/>
+                            <xs:enumeration
+                                    value="EventStatus"/>
+                            <xs:enumeration value="EventRoomId"/>
+                            <xs:enumeration
+                                    value="ActivityId"/>
+                            <xs:enumeration value="ActivityCompanyName"/>
+                            <xs:enumeration
+                                    value="ActivityContactName"/>
+                            <xs:enumeration value="ActivityDescription"/>
+                            <xs:enumeration value="ActivityStartDate"/>
+                            <xs:enumeration value="ActivityEndDate"/>
+                            <xs:enumeration value="ActivityManager"/>
+                            <xs:enumeration value="CreditStatus"/>
+                            <xs:enumeration value="CreditReason"/>
+                            <xs:enumeration value="CreditStatusChangeTime"/>
+                            <xs:enumeration value="LinkedProfile"/>
+                            <xs:enumeration value="AddProfileLink"/>
+                            <xs:enumeration value="DeleteProfileLink"/>
+                            <xs:enumeration value="EditProfileLink"/>
+                            <xs:enumeration value="ActivityCompanyID"/>
+                            <xs:enumeration
+                                    value="ActivityCompanyGlobalID"/>
+                            <xs:enumeration value="ActivityContactID"/>
+                            <xs:enumeration value="ActivityContactGlobalID"/>
+                            <xs:enumeration value="ActivityManagerID"/>
+                            <xs:enumeration value="ActivityTypeID"/>
+                            <xs:enumeration value="ActivityAllDayID"/>
+                            <xs:enumeration value="ActivityShowasID"/>
+                            <xs:enumeration value="ActivityReminderID"/>
+                            <xs:enumeration value="ActivityNeedReminder"/>
+                            <xs:enumeration value="ActivityPrivate"/>
+                            <xs:enumeration value="ActivityStartDateTime"/>
+                            <xs:enumeration value="ActivityEndDateTime"/>
+                            <xs:enumeration value="ActivityCompletedDate"/>
+                            <xs:enumeration
+                                    value="ActivityLinkedBookingId"/>
+                            <xs:enumeration value="ActivityLinkedCommunicationId"/>
+                            <xs:enumeration value="ActivityCheckAvailability"/>
+                            <xs:enumeration value="ActivityNotes"/>
+                            <xs:enumeration value="BirthPlace"/>
+                            <xs:enumeration value="Department"/>
+                            <xs:enumeration value="Position"/>
+                            <xs:enumeration value="GroupID"/>
+                            <xs:enumeration
+                                    value="GroupName"/>
+                            <xs:enumeration value="GroupContactID"/>
+                            <xs:enumeration
+                                    value="GroupFrom"/>
+                            <xs:enumeration value="GroupTo"/>
+                            <xs:enumeration
+                                    value="GroupTemplate"/>
+                            <xs:enumeration value="GroupTemplateID"/>
+                            <xs:enumeration
+                                    value="GroupInactive"/>
+                            <xs:enumeration value="GroupCompanyName"/>
+                            <xs:enumeration
+                                    value="GroupCompanyID"/>
+                            <xs:enumeration value="GroupTravelAgentName"/>
+                            <xs:enumeration value="GroupTravelAgentID"/>
+                            <xs:enumeration value="GroupSourceName"/>
+                            <xs:enumeration value="GroupSourceID"/>
+                            <xs:enumeration value="GroupIndividualName"/>
+                            <xs:enumeration value="GroupIndividualID"/>
+                            <xs:enumeration value="GroupVendorName"/>
+                            <xs:enumeration value="GroupVendorID"/>
+                            <xs:enumeration
+                                    value="GroupMeetingPlannerName"/>
+                            <xs:enumeration value="GroupMeetingPlannerID"/>
+                            <xs:enumeration value="GroupComment"/>
+                            <xs:enumeration value="BlockDetailID"/>
+                            <xs:enumeration value="BlockDetailDate"/>
+                            <xs:enumeration value="BlockDetailRoomType"/>
+                            <xs:enumeration value="BlockDetailCutOffDate"/>
+                            <xs:enumeration
+                                    value="BlockDetailInitNoOfRooms"/>
+                            <xs:enumeration value="BlockDetailActualNoOfRooms"/>
+                            <xs:enumeration value="BlockDetailPickedUp"/>
+                            <xs:enumeration value="BlockDetailCancelled"/>
+                            <xs:enumeration value="BlockHeaderID"/>
+                            <xs:enumeration value="BlockHeaderCode"/>
+                            <xs:enumeration value="BlockHeaderName"/>
+                            <xs:enumeration value="BlockHeaderFrom"/>
+                            <xs:enumeration value="BlockHeaderTo"/>
+                            <xs:enumeration value="BlockHeaderStatusCode"/>
+                            <xs:enumeration value="BlockHeaderStatus"/>
+                            <xs:enumeration
+                                    value="BlockHeaderReservationStatus"/>
+                            <xs:enumeration value="BlockHeaderRate"/>
+                            <xs:enumeration value="BlockHeaderElastic"/>
+                            <xs:enumeration value="Guarantee"/>
+                            <xs:enumeration value="TotalStay"/>
+                            <xs:enumeration value="ForeignTotalStay"/>
+                            <xs:enumeration value="RoomTypeDesc"/>
+                            <xs:enumeration value="RoomTypeLongDesc"/>
+                            <xs:enumeration value="Date"/>
+                            <xs:enumeration value="Price"/>
+                            <xs:enumeration
+                                    value="BaseCurrencyPrice"/>
+                            <xs:enumeration value="Availability"/>
+                            <xs:enumeration
+                                    value="RateInfo"/>
+                            <xs:enumeration value="ApprovalAmount"/>
+                            <xs:enumeration
+                                    value="ApprovalCode"/>
+                            <xs:enumeration value="CurrencyShortdesc"/>
+                            <xs:enumeration
+                                    value="CurrencyName"/>
+                            <xs:enumeration value="CurrencyISO3"/>
+                            <xs:enumeration
+                                    value="CurrencyDigits"/>
+                            <xs:enumeration value="CurrencyDepartment"/>
+                            <xs:enumeration
+                                    value="HurdleLOS"/>
+                            <xs:enumeration value="HurdleRateAmount">
+                                <xs:annotation>
+                                    <xs:documentation>Amount which sould be exceeded for given arrival date and LOS to
+                                        pass the hurdle
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration
+                                    value="HurdleDelta">
+                                <xs:annotation>
+                                    <xs:documentation>variation of the hurdle rate
+                                        each time a reservation is made. Not allowed if LOS is not 0
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="HurdleClosed">
+                                <xs:annotation>
+                                    <xs:documentation>1 - closed for this arrival day and this length of stay
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="HurdleMaxRateAmount">
+                                <xs:annotation>
+                                    <xs:documentation>maximal value of the hurdle rate</xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="OverbookingDate"/>
+                            <xs:enumeration value="OverbookingType">
+                                <xs:annotation>
+                                    <xs:documentation>1 =
+                                        House Overbooking
+                                        2 = Room Type Overbooking
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="OverbookingNoOfRooms">
+                                <xs:annotation>
+                                    <xs:documentation>Number of Rooms for this overbooking</xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="PackageCode"/>
+                            <xs:enumeration
+                                    value="PackageName"/>
+                            <xs:enumeration value="PackageFrequencyCode"/>
+                            <xs:enumeration value="PackageFrequencyName"/>
+                            <xs:enumeration value="PackageCurrency"/>
+                            <xs:enumeration value="PackageStart"/>
+                            <xs:enumeration value="PackageEnd"/>
+                            <xs:enumeration value="PackagePrice"/>
+                            <xs:enumeration value="PackageIncluded"/>
+                            <xs:enumeration value="PackageSinglePerRes"/>
+                            <xs:enumeration value="PackageShowInRes"/>
+                            <xs:enumeration value="PackagePriceType">
+                                <xs:annotation>
+                                    <xs:documentation>0 -
+                                        per child category 1 - per adult 2 - flat
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                            <xs:enumeration value="PackagePriceChildCategory">
+                                <xs:annotation>
+                                    <xs:documentation>Presented only PackagePriceType is 0</xs:documentation>
+                                </xs:annotation>
+                            </xs:enumeration>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+                <xs:attribute
+                        name="attr" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>Could be
+                            used as additional identifier for the field. For example Chaild category ot type of
+                            reservation
+                            attribute
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="addData"
+                              type="xs:string"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="rowType">
+        <xs:annotation>
+            <xs:documentation>contains one row of data
+                returned by a query operations
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element
+                    name="fields" type="fieldsType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="insertType">
+        <xs:annotation>
+            <xs:documentation>Not described
+                yet
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="fields"
+                        type="fieldsType"/>
+        </xs:sequence>
+        <xs:attribute name="ReqType" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="Profile"/>
+                    <xs:enumeration
+                            value="Reservation"/>
+                    <xs:enumeration value="FinancialAccount"/>
+                    <xs:enumeration
+                            value="ConferenceBooking"/>
+                    <xs:enumeration value="Activity"/>
+                    <xs:enumeration
+                            value="Task"/>
+                    <xs:enumeration value="Group"/>
+                    <xs:enumeration value="GroupTemplate"/>
+                    <xs:enumeration value="CreditCardApproval"/>
+                    <xs:enumeration value="Report"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="Name" type="xs:string"/>
+        <xs:attribute name="TranslationTable" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>If present in the request, short descriptions in request and response will be
+                    translatedbased on the specified translation table
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="commandType">
+        <xs:choice>
+            <xs:element name="post" type="postType"/>
+            <xs:element name="checkIn">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element
+                                name="RoomNumber"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="checkOut">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="RoomNumber"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="cancel">
+                <xs:annotation>
+                    <xs:documentation>Cancel the reservation</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:all>
+                        <xs:element name="GuestNum" type="xs:integer"/>
+                        <xs:element name="Reason" type="xs:string" minOccurs="0"/>
+                        <xs:element name="DeleteTraces"
+                                    type="xs:int" minOccurs="0"/>
+                        <xs:element name="SendEmail" minOccurs="0">
+                            <xs:complexType>
+                                <xs:simpleContent>
+                                    <xs:extension base="xs:int">
+                                        <xs:attribute name="TO" type="xs:string" use="required"/>
+                                        <xs:attribute name="CC"
+                                                      type="xs:string"/>
+                                        <xs:attribute name="BCC" type="xs:string"/>
+                                    </xs:extension>
+                                </xs:simpleContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:all>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="resetProfilePassword">
+                <xs:annotation>
+                    <xs:documentation>Resets the user password. New password sent by email. Used from myFidelio
+                        Homepage
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="userName" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="requestType">
+        <xs:annotation>
+            <xs:documentation>Defines a request
+                figure
+            </xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="query"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>To Send query request for
+                        reservation, profile, availability etc
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="queryType"/>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="update" type="updateType"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>To Send update request for
+                        profile, etc
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="insert"
+                        type="insertType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>To Send create
+                        request for profile, etc
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element
+                    name="command" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:complexContent>
+                        <xs:extension base="commandType">
+                            <xs:attribute name="Name" type="xs:string"
+                            />
+                            <xs:attribute name="TranslationTable" type="xs:string">
+                                <xs:annotation>
+                                    <xs:documentation>If present in the request, short descriptions in request and
+                                        response will be translated based on the specified translation table
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:attribute>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AvailabilityForWeb"
+                        type="AvailabilityForWebType" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Rate availability including room availability figures</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ValidateCreditCard"
+                        type="ValidateCreditCardType" maxOccurs="unbounded"/>
+            <xs:element name="import"
+                        type="importType"/>
+            <xs:element name="HotelAvailability" type="HotelAvailabilityType"
+                        maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Room Availability
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Report"
+                        type="ReportType" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="importType">
+        <xs:choice>
+            <xs:element name="insert">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="rows" type="rowsType"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="update" type="updateType"/>
+            <xs:element
+                    name="delete">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="conditions"
+                                    type="conditionsType" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+        <xs:attribute name="TableName" type="xs:string" use="required"/>
+        <xs:attribute
+                name="HotelID" type="xs:string" use="required"/>
+        <xs:attribute name="Name" type="xs:string"
+        />
+    </xs:complexType>
+    <xs:complexType name="updateType">
+        <xs:all>
+            <xs:element name="conditions" type="conditionsType"
+                        minOccurs="0"/>
+            <xs:element name="fields" type="fieldsType">
+                <xs:annotation>
+                    <xs:documentation>List of the fields which should be updated with the values</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+        <xs:attribute name="ReqType" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration value="Profile"/>
+                    <xs:enumeration value="Reservation"/>
+                    <xs:enumeration value="Group"/>
+                    <xs:enumeration
+                            value="GroupTemplate"/>
+                    <xs:enumeration value="Activity"/>
+                    <xs:enumeration value="Task"/>
+                    <xs:enumeration value="HurdleRate"/>
+                    <xs:enumeration value="Overbooking"/>
+                    <xs:enumeration
+                            value="Report"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="Name" type="xs:string"/>
+        <xs:attribute name="TranslationTable" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>If present in the request, short descriptions in request and
+                    response will be translated based on the specified translation table
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="queryType">
+        <xs:annotation>
+            <xs:documentation>Types of accepted
+                queriesReqType - type of the rquestName - name of the request. It will be returned as Name attribute for
+                the query element in the response. Used to match response to the request in case more than one query
+                were passed
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="conditions"
+                        type="conditionsType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Search
+                        conditions
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="fields"
+                        type="fieldsType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>List of the fields which
+                        should be included in the response statementThis element must exist for all kind of queries
+                        except
+                        SystemDate and SystemInfo
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element
+                    name="froms" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used in CustomQuery
+                        request
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="from" type="xs:string" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="orders" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used in CustomQuery request. Order By clause</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="order"
+                                    type="xs:string" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="groups" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used in
+                        CustomQuery request. Group By clause
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="group" type="xs:string" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="ReqType"
+                      use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:NMTOKEN">
+                    <xs:enumeration
+                            value="Availability"/>
+                    <xs:enumeration value="Profile"/>
+                    <xs:enumeration value="Reservation"/>
+                    <xs:enumeration value="Department"/>
+                    <xs:enumeration value="SystemDate">
+                        <xs:annotation>
+                            <xs:documentation>All conditions and fields list are ignored</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="SystemInfo">
+                        <xs:annotation>
+                            <xs:documentation>All conditions and fields list are ignored</xs:documentation>
+                        </xs:annotation>
+                    </xs:enumeration>
+                    <xs:enumeration value="Posting"/>
+                    <xs:enumeration
+                            value="ChildrenCategories"/>
+                    <xs:enumeration value="CreditCardTypes"/>
+                    <xs:enumeration
+                            value="UserLogin"/>
+                    <xs:enumeration value="HtmlInfo"/>
+                    <xs:enumeration
+                            value="RequestGlobalID"/>
+                    <xs:enumeration value="SeatingArrangments"/>
+                    <xs:enumeration
+                            value="ConfiguredStatusList"/>
+                    <xs:enumeration value="ConferencePackagesList"/>
+                    <xs:enumeration value="GetEventInfoBoardDetails"/>
+                    <xs:enumeration value="GetActivitiesDetails"/>
+                    <xs:enumeration value="Group"/>
+                    <xs:enumeration value="LanguagesLis"/>
+                    <xs:enumeration
+                            value="FutureReservations"/>
+                    <xs:enumeration value="SystemTime"/>
+                    <xs:enumeration
+                            value="Activity"/>
+                    <xs:enumeration value="Task"/>
+                    <xs:enumeration
+                            value="GetEventInfoBoardDetails"/>
+                    <xs:enumeration value="ConferencePackagesList"/>
+                    <xs:enumeration value="ConfiguredStatusList"/>
+                    <xs:enumeration value="SeatingArrangments"/>
+                    <xs:enumeration value="GroupTemplate"/>
+                    <xs:enumeration value="BlockHeader"/>
+                    <xs:enumeration value="BlockDetail"/>
+                    <xs:enumeration value="CurrencyList"/>
+                    <xs:enumeration
+                            value="Package"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="Name"
+                      type="xs:string"/>
+        <xs:attribute name="Language" type="xs:string">
+            <xs:annotation>
+                <xs:documentation source="If data in the response should be translated"/>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="TranslationTable" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>If present in the request, short descriptions in request and
+                    response will be translated based on the specified translation table
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="postResponseType">
+        <xs:annotation>
+            <xs:documentation>Returning by XML
+                interface as a response for posting
+            </xs:documentation>
+        </xs:annotation>
+    </xs:complexType>
+    <xs:complexType name="AvailabilityForWebType">
+        <xs:all>
+            <xs:element name="fields"
+                        type="fieldsType"/>
+        </xs:all>
+        <xs:attribute name="Name" type="xs:string"/>
+        <xs:attribute
+                name="Language" type="xs:string"/>
+        <xs:attribute name="TranslationTable"
+                      type="xs:string">
+            <xs:annotation>
+                <xs:documentation>If present in the request, short
+                    descriptions in request and response will be translated based on the specified translation
+                    table
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="fieldsType">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="field" type="fieldType" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="BlockDetailConditionType">
+        <xs:annotation>
+            <xs:documentation>Used to
+                define condition for BlockDetail search request
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:restriction base="conditionType">
+                <xs:attribute name="name" use="required">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:NMTOKEN">
+                            <xs:enumeration
+                                    value="BlockHeaderID"/>
+                            <xs:enumeration value="BlockDetailStartDate"/>
+                            <xs:enumeration
+                                    value="BlockDetailEndDate"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:restriction>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="ValidateCreditCardType">
+        <xs:all>
+            <xs:element name="CreditCardNo"
+                        type="xs:string"/>
+            <xs:element name="ExpiryMonth" type="xs:string"/>
+            <xs:element
+                    name="ExpiryYear" type="xs:string"/>
+            <xs:element name="CardholderName" type="xs:string"/>
+            <xs:element name="CreditCardCode" type="xs:string"/>
+        </xs:all>
+        <xs:attribute name="Name"
+                      type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="conditionsType">
+        <xs:annotation>
+            <xs:documentation>Defines list of
+                conditions for search
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="condition" type="conditionType"/>
+            <xs:element name="link" type="linkType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="conditionType">
+        <xs:annotation>
+            <xs:documentation>defines a condition set
+                on a single field. This is abstract type. The real type should be selected according to the request type
+                (ReservationConditionType, ProfileConditionType etc.)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="conditionSimpleType">
+                <xs:attribute name="name"
+                              type="xs:anySimpleType" use="required"/>
+                <xs:attribute name="operation" type="binaryOperation"
+                              use="required"/>
+                <xs:attribute name="dataType">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:NMTOKEN">
+                            <xs:enumeration value="String"/>
+                            <xs:enumeration
+                                    value="Date"/>
+                            <xs:enumeration value="Int"/>
+                            <xs:enumeration value="Float"/>
+                            <xs:enumeration value="Plain"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="postType">
+        <xs:annotation>
+            <xs:documentation>Postings</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element
+                    name="ccm_book_actuals" type="ccm_book_actualsType">
+                <xs:annotation>
+                    <xs:documentation>Used to post CCM transaction</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="crm_posting">
+                <xs:annotation>
+                    <xs:documentation>Used to
+                        post any transaction based on reservation
+                    </xs:documentation>
+                    <xs:documentation>Used to post any
+                        transaction based on reservation
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType
+                        id="PostingDepartmentChoice">
+                    <xs:complexContent>
+                        <xs:extension base="crm_postType">
+                            <xs:choice>
+                                <xs:element name="DepartmentCode" type="xs:string"/>
+                                <xs:element
+                                        name="ArticleCode" type="xs:string"/>
+                            </xs:choice>
+                        </xs:extension>
+                    </xs:complexContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="linkType">
+        <xs:annotation>
+            <xs:documentation>links to conditions to form a
+                hierarchy
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence minOccurs="0">
+            <xs:element
+                    name="condition" type="conditionsType"/>
+        </xs:sequence>
+        <xs:attribute name="operator"
+                      use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:NMTOKENS">
+                    <xs:enumeration
+                            value="AND"/>
+                    <xs:enumeration value="OR"/>
+                    <xs:enumeration value="NOT"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+    <xs:complexType name="HotelAvailabilityType">
+        <xs:all>
+            <xs:element name="fields"
+                        type="fieldsType"/>
+        </xs:all>
+        <xs:attribute name="Name" type="xs:string"/>
+        <xs:attribute
+                name="TranslationTable" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="ReportType">
+        <xs:sequence>
+            <xs:element name="ReportID"
+                        type="xs:integer" minOccurs="0"/>
+            <xs:element name="ReportType" minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="Confirmation"/>
+                        <xs:enumeration value="CCMConfirmation"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="Name" type="xs:string"/>
+                    <xs:attribute name="DataType">
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration value="String"/>
+                                <xs:enumeration value="Date"/>
+                                <xs:enumeration value="Int"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+            <xs:element
+                    name="Destination">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration
+                                value="Email"/>
+                        <xs:enumeration value="Printer"/>
+                        <xs:enumeration value="Export"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="ExportFormat"
+                        minOccurs="0">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration
+                                value="PDF"/>
+                        <xs:enumeration value="RTF"/>
+                        <xs:enumeration value="Text"/>
+                        <xs:enumeration value="HTML"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="Email" minOccurs="0">
+                <xs:complexType>
+                    <xs:attribute name="Address"
+                                  type="xs:string" use="required"/>
+                    <xs:attribute name="SendAsAttachment" type="xs:boolean"
+                                  use="required"/>
+                    <xs:attribute name="AttachmentFormat">
+                        <xs:annotation>
+                            <xs:documentation>If Attachment type is "Text" then report will be sent as a body
+                            </xs:documentation>
+                        </xs:annotation>
+                        <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                                <xs:enumeration
+                                        value="RTF"/>
+                                <xs:enumeration value="PDF"/>
+                                <xs:enumeration value="HTML"/>
+                                <xs:enumeration value="Text"/>
+                            </xs:restriction>
+                        </xs:simpleType>
+                    </xs:attribute>
+                    <xs:attribute name="Subject" type="xs:string"/>
+                    <xs:attribute name="DefaultBody"
+                                  type="xs:string"/>
+                    <xs:attribute name="CC" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>List of CC email addresses separated by
+                                comma
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="BCC"
+                                  type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation>List of BCC email
+                                addresses separated by comma
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="ConfirmationArchiveRequest" type="xs:integer"
+                        minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Should contain archive record ID (for internal
+                        use : yrco_id)
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute
+                name="Name" type="xs:string"/>
+    </xs:complexType>
+    <xs:complexType name="ccm_book_actualsType">
+        <xs:annotation>
+            <xs:documentation>POS
+                posting
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="bookingID"
+                        type="xs:integer"/>
+            <xs:element name="event_id" type="xs:integer"/>
+            <xs:element
+                    name="postingDate" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Date in format
+                        DD.MM.YYYY
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="menu_id"
+                        type="xs:integer" minOccurs="0"/>
+            <xs:element name="menu_item_id" type="xs:integer"
+                        minOccurs="0"/>
+            <xs:element name="misc_item_id" type="xs:integer" minOccurs="0"/>
+            <xs:element
+                    name="function_space_id" type="xs:integer" minOccurs="0"/>
+            <xs:element name="ResourceName"
+                        type="xs:string"/>
+            <xs:element name="DepartmentCode" type="xs:string"/>
+            <xs:element name="count"
+                        type="xs:integer"/>
+            <xs:element name="total_amount" type="xs:string"/>
+            <xs:element
+                    name="OverrideReason" type="xs:string" minOccurs="0"/>
+            <xs:element name="UserName"
+                        type="xs:string"/>
+            <xs:element name="Covers" type="xs:integer" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+    <xs:complexType name="crm_postType">
+        <xs:annotation>
+            <xs:documentation>Used to submit a
+                posting
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="GuestNum"
+                        type="xs:integer">
+                <xs:annotation>
+                    <xs:documentation>Reservation number</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="PostingDate" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Date in format DD.MM.YYYY</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="RoomNum" type="xs:string"/>
+            <xs:element
+                    name="Quantity" type="xs:integer"/>
+            <xs:element name="Price" type="xs:string"/>
+            <xs:element
+                    name="Comment" type="xs:string" minOccurs="0"/>
+            <xs:element name="CheckNum" type="xs:string"
+                        minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Is mandatory if Check element is
+                        submited
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="CheckDate" type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Used only together with
+                        Check. It is mandatory if Check element is submited. Must contain date and time part
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Check" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>POS Guest Checks</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Description" type="xs:string" minOccurs="0"/>
+            <xs:element name="Currency"
+                        type="xs:string" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Optional currency code short
+                        description. If not provided, postig made in system default currency
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="ProfileID" type="xs:integer" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Allows to make a posting for specific guest in multi guest
+                        reservation. Not supported for FA postings
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+</xs:schema>
